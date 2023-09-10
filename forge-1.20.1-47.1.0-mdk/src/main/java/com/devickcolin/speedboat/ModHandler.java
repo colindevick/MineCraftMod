@@ -28,6 +28,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import software.bernie.geckolib.GeckoLib;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import org.slf4j.Logger;
 
@@ -65,6 +66,7 @@ public class ModHandler
     	ModItems.register(modEventBus);
     	MinecraftForge.EVENT_BUS.register(this);
     	modEventBus.addListener(this::addCreative);
+    	GeckoLib.initialize();
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
