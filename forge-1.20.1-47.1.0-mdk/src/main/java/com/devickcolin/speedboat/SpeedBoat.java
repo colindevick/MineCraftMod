@@ -62,13 +62,18 @@ public class SpeedBoat
     	modEventBus.addListener(this::commonSetup);
     	ModItems.register(modEventBus);
     	MinecraftForge.EVENT_BUS.register(this);
+    	modEventBus.addListener(this::addCreative);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
     }
 
-
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+    	if(event.getTabKey()== CreativeModeTabs.TOOLS_AND_UTILITIES) {
+    		event.accept(ModItems.SPEEDBOAT);
+    	}
+    }
     // You can use SubscribeEvent and let the Event Bus discover methods to call
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
