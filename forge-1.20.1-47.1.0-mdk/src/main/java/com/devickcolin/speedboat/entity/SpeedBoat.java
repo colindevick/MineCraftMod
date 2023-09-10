@@ -1,4 +1,4 @@
-package com.devickcolin.speedboat;
+package com.devickcolin.speedboat.entity;
 
 // Made with Blockbench 4.8.3
 // Exported for Minecraft version 1.17 or later with Mojang mappings
