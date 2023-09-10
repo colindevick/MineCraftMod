@@ -1,89 +1,80 @@
 package com.devickcolin.speedboat;
 
-import com.mojang.logging.LogUtils;
+// Made with Blockbench 4.8.3
+// Exported for Minecraft version 1.17 or later with Mojang mappings
+// Paste this class into your mod and generate all required imports
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
-import org.slf4j.Logger;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 
-// The value here should match an entry in the META-INF/mods.toml file
-@Mod(SpeedBoat.MOD_ID)
-public class SpeedBoat
-{
-    // Define mod id in a common place for everything to reference
-    public static final String MOD_ID = "speedboat";
-    // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
-   
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
-    // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
-   // public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
-    // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
-   // public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
+public class SpeedBoat<T extends Entity> extends EntityModel<T> {
+	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
+	public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(new ResourceLocation("modid", "speedboat"), "main");
+	private final ModelPart Engine;
+	private final ModelPart Hull;
+	private final ModelPart WindSheild;
 
-    // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
-    
-    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-   /* public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-            }).build()); */
+	public SpeedBoat(ModelPart root) {
+		this.Engine = root.getChild("Engine");
+		this.Hull = root.getChild("Hull");
+		this.WindSheild = root.getChild("WindSheild");
+	}
 
-    public SpeedBoat()
-    {
-    	IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-    	modEventBus.addListener(this::commonSetup);
-    	ModItems.register(modEventBus);
-    	MinecraftForge.EVENT_BUS.register(this);
-    	modEventBus.addListener(this::addCreative);
-    }
+	public static LayerDefinition createBodyLayer() {
+		MeshDefinition meshdefinition = new MeshDefinition();
+		PartDefinition partdefinition = meshdefinition.getRoot();
 
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
-    }
+		PartDefinition Engine = partdefinition.addOrReplaceChild("Engine", CubeListBuilder.create().texOffs(0, 15).addBox(-3.0F, -8.0F, 10.0F, 6.0F, 4.0F, 4.0F, new CubeDeformation(0.0F))
+		.texOffs(0, 23).addBox(-1.0F, -4.0F, 11.0F, 2.0F, 6.0F, 1.0F, new CubeDeformation(0.0F))
+		.texOffs(0, 0).addBox(1.0F, -8.0F, 5.0F, 1.0F, 1.0F, 5.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-    	if(event.getTabKey()== CreativeModeTabs.TOOLS_AND_UTILITIES) {
-    		event.accept(ModItems.SPEEDBOAT);
-    	}
-    }
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+		PartDefinition Prop = Engine.addOrReplaceChild("Prop", CubeListBuilder.create().texOffs(0, 6).addBox(-1.0F, 2.0F, 11.0F, 2.0F, 2.0F, 3.0F, new CubeDeformation(0.0F))
+		.texOffs(7, 2).addBox(-2.0F, 2.0F, 13.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F))
+		.texOffs(7, 0).addBox(1.0F, 3.0F, 13.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-          
-        }
-    }
+		PartDefinition BladeBottom_r1 = Prop.addOrReplaceChild("BladeBottom_r1", CubeListBuilder.create().texOffs(0, 2).addBox(0.5F, -1.5F, 0.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F))
+		.texOffs(0, 0).addBox(-2.5F, -1.5F, -1.0F, 1.0F, 1.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 3.5F, 12.5F, -1.5708F, 0.0F, 1.5708F));
+
+		PartDefinition Hull = partdefinition.addOrReplaceChild("Hull", CubeListBuilder.create().texOffs(0, 15).addBox(6.0F, -6.0F, -12.0F, 2.0F, 5.0F, 20.0F, new CubeDeformation(0.0F))
+		.texOffs(24, 20).addBox(-8.0F, -6.0F, -12.0F, 2.0F, 5.0F, 20.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 24.0F, 0.0F));
+
+		PartDefinition Front_r1 = Hull.addOrReplaceChild("Front_r1", CubeListBuilder.create().texOffs(0, 40).addBox(12.0F, -6.0F, -8.0F, 2.0F, 5.0F, 16.0F, new CubeDeformation(0.0F))
+		.texOffs(20, 45).addBox(-10.0F, -5.0F, -8.0F, 2.0F, 4.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 1.5708F, 0.0F));
+
+		PartDefinition Bottom_r1 = Hull.addOrReplaceChild("Bottom_r1", CubeListBuilder.create().texOffs(0, 0).addBox(-12.0F, -1.0F, -7.0F, 20.0F, 1.0F, 14.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
+
+		PartDefinition WindSheild = partdefinition.addOrReplaceChild("WindSheild", CubeListBuilder.create(), PartPose.offset(0.0F, 24.0F, 0.0F));
+
+		PartDefinition cube_r1 = WindSheild.addOrReplaceChild("cube_r1", CubeListBuilder.create().texOffs(40, 45).addBox(-6.0F, -3.49F, 1.5F, 12.0F, 6.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -8.5F, -12.5F, -0.5672F, 0.0F, 0.0F));
+
+		return LayerDefinition.create(meshdefinition, 128, 128);
+	}
+
+	@Override
+	public void setupAnim(T p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_,
+			float p_102623_) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void renderToBuffer(PoseStack p_103111_, VertexConsumer p_103112_, int p_103113_, int p_103114_,
+			float p_103115_, float p_103116_, float p_103117_, float p_103118_) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
 }
