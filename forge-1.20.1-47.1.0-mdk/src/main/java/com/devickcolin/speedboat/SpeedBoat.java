@@ -37,10 +37,8 @@ public class SpeedBoat
     public static final String MOD_ID = "speedboat";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+   
 
     // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
    // public static final RegistryObject<Block> EXAMPLE_BLOCK = BLOCKS.register("example_block", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)));
@@ -48,7 +46,6 @@ public class SpeedBoat
    // public static final RegistryObject<Item> EXAMPLE_BLOCK_ITEM = ITEMS.register("example_block", () -> new BlockItem(EXAMPLE_BLOCK.get(), new Item.Properties()));
 
     // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
-    public static final RegistryObject<Item> SPEED_BOAT = ITEMS.register("speed_boat", () -> new Item(new Item.Properties().stacksTo(1)));
     
     // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
    /* public static final RegistryObject<CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
@@ -60,7 +57,10 @@ public class SpeedBoat
 
     public SpeedBoat()
     {
-
+    	IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+    	modEventBus.addListener(this::commonSetup);
+    	ModItems.register(modEventBus);
+    	MinecraftForge.EVENT_BUS.register(this);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
