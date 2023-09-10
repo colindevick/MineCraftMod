@@ -5,6 +5,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
 public class SpeedBoatItem extends Item {
 
@@ -13,7 +14,6 @@ public class SpeedBoatItem extends Item {
 		// TODO Auto-generated constructor stub
 	}
 
-	
 	
 	
 	

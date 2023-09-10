@@ -1,4 +1,5 @@
 package com.devickcolin.speedboat.entity;
+// TODO Work with GECKOLIB to render boat. 
 
 // Made with Blockbench 4.8.3
 // Exported for Minecraft version 1.17 or later with Mojang mappings
