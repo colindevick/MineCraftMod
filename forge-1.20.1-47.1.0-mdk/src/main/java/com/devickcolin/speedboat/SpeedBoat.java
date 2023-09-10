@@ -1,6 +1,7 @@
 package com.devickcolin.speedboat;
 
 import com.mojang.logging.LogUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.food.FoodProperties;
@@ -67,10 +68,6 @@ public class SpeedBoat
     {
     }
 
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-    } 
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
 
@@ -81,9 +78,7 @@ public class SpeedBoat
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-            // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+          
         }
     }
 }
