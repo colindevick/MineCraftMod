@@ -1,5 +1,7 @@
 package com.devickcolin.speedboat;
 
+import com.devickcolin.speedboat.entity.custom.ModHandler;
+
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
