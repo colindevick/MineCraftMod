@@ -9,12 +9,11 @@ public class Speed_BoatEntity extends Boat implements GeoEntity{
 	
 
 
+	  public Speed_BoatEntity(EntityType<? extends Boat> p_38290_, Level p_38291_) {
+	      super(p_38290_, p_38291_);
+	      this.blocksBuilding = true;
+	   }
 
-
-	public Speed_BoatEntity(EntityType<? extends Boat> p_38290_, Level p_38291_) {
-		super(p_38290_, p_38291_);
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	public AnimatableInstanceCache getAnimatableInstanceCache() {
