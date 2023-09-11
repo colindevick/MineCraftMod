@@ -5,9 +5,10 @@ import net.minecraft.world.level.Level;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.util.GeckoLibUtil;
 public class Speed_BoatEntity extends Boat implements GeoEntity{
 	
-
+	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
 	  public Speed_BoatEntity(EntityType<? extends Boat> p_38290_, Level p_38291_) {
 	      super(p_38290_, p_38291_);
@@ -18,7 +19,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity{
 	@Override
 	public AnimatableInstanceCache getAnimatableInstanceCache() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.cache;
 	}
 
 	@Override

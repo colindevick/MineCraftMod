@@ -61,10 +61,10 @@ public class ModHandler {
 		MinecraftForge.EVENT_BUS.register(this);
 		modEventBus.addListener(this::addCreative);
 		GeckoLib.initialize();
+		
+
+		
 		ModEntityCreator.register(modEventBus);
-
-		EntityRenderers.register(ModEntityCreator.SPEED_BOATS.get(), SpeedBoatRenderer::new);
-
 	}
 
 	private void commonSetup(final FMLCommonSetupEvent event) {
@@ -83,7 +83,7 @@ public class ModHandler {
 	public static class ClientModEvents {
 		@SubscribeEvent
 		public static void onClientSetup(FMLClientSetupEvent event) {
-
+			EntityRenderers.register(ModEntityCreator.SPEED_BOATS.get(), SpeedBoatRenderer::new);
 		}
 	}
 }

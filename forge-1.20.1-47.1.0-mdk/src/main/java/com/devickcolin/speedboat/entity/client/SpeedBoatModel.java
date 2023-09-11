@@ -13,12 +13,12 @@ public class SpeedBoatModel extends GeoModel<Speed_BoatEntity> {
 
 	public ResourceLocation getModelResource(Speed_BoatEntity animatable) {
 		// TODO Auto-generated method stub
-		return new ResourceLocation(ModHandler.MOD_ID, "geo/SpeedBoat.geo.json");
+		return new ResourceLocation(ModHandler.MOD_ID, "geo/speedboat.geo.json");
 	}
 	
 	public ResourceLocation getTextureResource(Speed_BoatEntity animatable) {
 		// TODO Auto-generated method stub
-		return new ResourceLocation(ModHandler.MOD_ID, "textures/entity/Boat_Texture.png");
+		return new ResourceLocation(ModHandler.MOD_ID, "textures/entity/boat_texture.png");
 	}
 
 	public ResourceLocation getAnimationResource(Speed_BoatEntity animatable) {
