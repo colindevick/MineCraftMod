@@ -1,4 +1,4 @@
-package com.devickcolin.speedboat;
+package com.devickcolin.speedboat.entity.custom.items;
 
 
 import net.minecraft.world.level.Level;

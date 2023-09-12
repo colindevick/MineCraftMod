@@ -2,11 +2,14 @@ package com.devickcolin.speedboat.entity.custom;
 
 import org.slf4j.Logger;
 
-import com.devickcolin.speedboat.ModItems;
+import com.devickcolin.speedboat.entity.custom.items.ModItems;
+import com.devickcolin.speedboat.entity.custom.items.ModPotions;
 import com.devickcolin.speedboat.entity.renderer.speedboat.SpeedBoatRenderer;
 import com.mojang.logging.LogUtils;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,6 +21,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import software.bernie.geckolib.GeckoLib;
+import com.devickcolin.speedboat.entity.custom.CreativeTab;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ModHandler.MOD_ID)
@@ -58,6 +62,7 @@ public class ModHandler {
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(this::commonSetup);
 		ModItems.register(modEventBus);
+		ModPotions.register(modEventBus);
 		MinecraftForge.EVENT_BUS.register(this);
 		modEventBus.addListener(this::addCreative);
 		GeckoLib.initialize();
@@ -70,10 +75,18 @@ public class ModHandler {
 	private void commonSetup(final FMLCommonSetupEvent event) {
 	}
 
-	private void addCreative(BuildCreativeModeTabContentsEvent event) {
-		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-			event.accept(ModItems.SPEEDBOAT);
-		}
+	private void addCreative(BuildCreativeModeTabContentsEvent event)  {
+		ResourceKey<CreativeModeTab> tab = event.getTabKey();
+		
+			switch (CreativeTab.keyGetter(tab)) {
+			case TOOLS_AND_UTILITIES:
+				event.accept(ModItems.SPEEDBOAT);
+				break;
+			default:
+				break;
+					
+			}
+		
 	}
 	// You can use SubscribeEvent and let the Event Bus discover methods to call
 
