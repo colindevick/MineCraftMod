@@ -22,6 +22,8 @@ import net.minecraftforge.registries.RegistryObject;
 		public static void register(IEventBus eventBus) {
 			POTIONS.register(eventBus);
 		}
+		
+		
 }
 		
 		

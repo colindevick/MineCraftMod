@@ -4,6 +4,7 @@ import com.devickcolin.speedboat.entity.custom.ModHandler;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PotionItem;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
