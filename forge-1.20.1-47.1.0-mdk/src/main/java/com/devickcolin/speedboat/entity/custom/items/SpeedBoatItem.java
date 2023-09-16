@@ -4,6 +4,8 @@ package com.devickcolin.speedboat.entity.custom.items;
 import java.util.List;
 import java.util.function.Predicate;
 
+import com.devickcolin.speedboat.entity.custom.Speed_BoatEntity;
+
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -24,12 +26,12 @@ import net.minecraft.world.phys.Vec3;
 public class SpeedBoatItem extends BoatItem {
 
 	private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
+	
 	public SpeedBoatItem(boolean p_220013_, Type p_220014_, Properties p_220015_) {
-		super(p_220013_, p_220014_, p_220015_);
-		// TODO Auto-generated constructor stub
+		super(p_220013_, null, p_220015_);
 	}
 
-	//@ TODO add entity spawning
+	//@ TODO add "speed boat" type to boat so it will spawn
 	   public InteractionResultHolder<ItemStack> use(Level p_40622_, Player p_40623_, InteractionHand p_40624_) {
 		      ItemStack itemstack = p_40623_.getItemInHand(p_40624_);
 		      HitResult hitresult = getPlayerPOVHitResult(p_40622_, p_40623_, ClipContext.Fluid.ANY);
@@ -50,7 +52,8 @@ public class SpeedBoatItem extends BoatItem {
 		         }
 
 		         if (hitresult.getType() == HitResult.Type.BLOCK) {
-		            Boat boat = this.getBoat(p_40622_, hitresult);
+		            Speed_BoatEntity boat = this.getBoat(p_40622_, hitresult);
+		            boat.setVariant(null);
 		            boat.setYRot(p_40623_.getYRot());
 		            if (!p_40622_.noCollision(boat, boat.getBoundingBox())) {
 		               return InteractionResultHolder.fail(itemstack);
@@ -72,8 +75,8 @@ public class SpeedBoatItem extends BoatItem {
 		      }
 		   }
 
-	   private Boat getBoat(Level p_220017_, HitResult p_220018_) {
-		      return new Boat(p_220017_, p_220018_.getLocation().x, p_220018_.getLocation().y, p_220018_.getLocation().z);
+	   private Speed_BoatEntity getBoat(Level p_220017_, HitResult p_220018_) {
+		      return new Speed_BoatEntity(p_220017_, p_220018_.getLocation().x, p_220018_.getLocation().y, p_220018_.getLocation().z);
 		   }
 	
 
