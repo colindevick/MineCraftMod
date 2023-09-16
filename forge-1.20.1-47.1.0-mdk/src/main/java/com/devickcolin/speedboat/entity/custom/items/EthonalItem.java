@@ -35,8 +35,8 @@ public class EthonalItem extends PotionItem {
 	 public InteractionResultHolder<ItemStack> use(Level p_42993_, Player p_42994_, InteractionHand p_42995_) {
 	      return ItemUtils.startUsingInstantly(p_42993_, p_42994_, p_42995_);
 	   }
-	 
-	   public InteractionResult useOn(UseOnContext p_220235_) {
+	 //@ TODO Add function that fills the speedboat.
+	/*   public InteractionResult useOn(UseOnContext p_220235_) {
 		      Level level = p_220235_.getLevel();
 		      BlockPos blockpos = p_220235_.getClickedPos();
 		      Player player = p_220235_.getPlayer();
@@ -60,8 +60,8 @@ public class EthonalItem extends PotionItem {
 		         level.gameEvent((Entity)null, GameEvent.FLUID_PLACE, blockpos);
 		         level.setBlockAndUpdate(blockpos, Blocks.MUD.defaultBlockState());
 		         return InteractionResult.sidedSuccess(level.isClientSide);
-		      } else {
-		         return InteractionResult.PASS;
+		  //    } else {
+		    //     return InteractionResult.PASS;
 		      }
-		   }
+		   }*/
 }

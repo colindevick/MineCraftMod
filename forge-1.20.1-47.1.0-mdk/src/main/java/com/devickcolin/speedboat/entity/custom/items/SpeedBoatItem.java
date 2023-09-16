@@ -1,65 +1,80 @@
 package com.devickcolin.speedboat.entity.custom.items;
 
 
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.InteractionResult;
+import java.util.List;
+import java.util.function.Predicate;
+
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.entity.vehicle.Boat.Type;
+import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUtils;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
-public class SpeedBoatItem extends Item {
+public class SpeedBoatItem extends BoatItem {
 
-	public SpeedBoatItem(Properties p_41383_) {
-		super(p_41383_);
+	private static final Predicate<Entity> ENTITY_PREDICATE = EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
+	public SpeedBoatItem(boolean p_220013_, Type p_220014_, Properties p_220015_) {
+		super(p_220013_, p_220014_, p_220015_);
 		// TODO Auto-generated constructor stub
 	}
-	
-	//@ TODO add interaction that places boat when using on water.
-	 public InteractionResult useOn(UseOnContext p_220235_) {
-	      Level level = p_220235_.getLevel();
-	      BlockPos blockpos = p_220235_.getClickedPos();
-	      Player player = p_220235_.getPlayer();
-	      ItemStack itemstack = p_220235_.getItemInHand();
-	      BlockState blockstate = level.getBlockState(blockpos);
-	      Entity entity = 
-	      BlockType 
-	      if (if blockstate == level.getF ) {
-	         level.playSound((Player)null, blockpos, SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 1.0F, 1.0F);
-	         player.setItemInHand(p_220235_.getHand(), ItemUtils.createFilledResult(itemstack, player, new ItemStack(Items.GLASS_BOTTLE)));
-	         player.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
-	         if (!level.isClientSide) {
-	            ServerLevel serverlevel = (ServerLevel)level;
 
-	            for(int i = 0; i < 5; ++i) {
-	               serverlevel.sendParticles(ParticleTypes.SPLASH, (double)blockpos.getX() + level.random.nextDouble(), (double)(blockpos.getY() + 1), (double)blockpos.getZ() + level.random.nextDouble(), 1, 0.0D, 0.0D, 0.0D, 1.0D);
-	            }
-	         }
+	//@ TODO add entity spawning
+	   public InteractionResultHolder<ItemStack> use(Level p_40622_, Player p_40623_, InteractionHand p_40624_) {
+		      ItemStack itemstack = p_40623_.getItemInHand(p_40624_);
+		      HitResult hitresult = getPlayerPOVHitResult(p_40622_, p_40623_, ClipContext.Fluid.ANY);
+		      if (hitresult.getType() == HitResult.Type.MISS) {
+		         return InteractionResultHolder.pass(itemstack);
+		      } else {
+		         Vec3 vec3 = p_40623_.getViewVector(1.0F);
+		         List<Entity> list = p_40622_.getEntities(p_40623_, p_40623_.getBoundingBox().expandTowards(vec3.scale(5.0D)).inflate(1.0D), ENTITY_PREDICATE);
+		         if (!list.isEmpty()) {
+		            Vec3 vec31 = p_40623_.getEyePosition();
 
-	         level.playSound((Player)null, blockpos, SoundEvents.BOTTLE_EMPTY, SoundSource.BLOCKS, 1.0F, 1.0F);
-	         level.gameEvent((Entity)null, GameEvent.FLUID_PLACE, blockpos);
-	         level.setBlockAndUpdate(blockpos, Blocks.MUD.defaultBlockState());
-	         return InteractionResult.sidedSuccess(level.isClientSide);
-	      } else {
-	         return InteractionResult.PASS;
-	      }
-	   }
-	
+		            for(Entity entity : list) {
+		               AABB aabb = entity.getBoundingBox().inflate((double)entity.getPickRadius());
+		               if (aabb.contains(vec31)) {
+		                  return InteractionResultHolder.pass(itemstack);
+		               }
+		            }
+		         }
+
+		         if (hitresult.getType() == HitResult.Type.BLOCK) {
+		            Boat boat = this.getBoat(p_40622_, hitresult);
+		            boat.setYRot(p_40623_.getYRot());
+		            if (!p_40622_.noCollision(boat, boat.getBoundingBox())) {
+		               return InteractionResultHolder.fail(itemstack);
+		            } else {
+		               if (!p_40622_.isClientSide) {
+		                  p_40622_.addFreshEntity(boat);
+		                  p_40622_.gameEvent(p_40623_, GameEvent.ENTITY_PLACE, hitresult.getLocation());
+		                  if (!p_40623_.getAbilities().instabuild) {
+		                     itemstack.shrink(1);
+		                  }
+		               }
+
+		               p_40623_.awardStat(Stats.ITEM_USED.get(this));
+		               return InteractionResultHolder.sidedSuccess(itemstack, p_40622_.isClientSide());
+		            }
+		         } else {
+		            return InteractionResultHolder.pass(itemstack);
+		         }
+		      }
+		   }
+
+	   private Boat getBoat(Level p_220017_, HitResult p_220018_) {
+		      return new Boat(p_220017_, p_220018_.getLocation().x, p_220018_.getLocation().y, p_220018_.getLocation().z);
+		   }
 	
 
 	

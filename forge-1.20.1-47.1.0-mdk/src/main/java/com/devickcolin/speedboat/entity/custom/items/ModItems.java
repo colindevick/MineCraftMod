@@ -14,11 +14,12 @@ public class ModItems {
 		public static final DeferredRegister<Item> ITEMS =
 				DeferredRegister.create(ForgeRegistries.ITEMS, ModHandler.MOD_ID);
 		
-		public static final RegistryObject<Item> SPEEDBOAT = ITEMS.register("speedboat",
-				() -> new Item(new Item.Properties().stacksTo(1)));
+		public static final RegistryObject<SpeedBoatItem> SPEEDBOAT = ITEMS.register("speedboat",
+				() -> new SpeedBoatItem (false, null, new SpeedBoatItem.Properties().stacksTo(1)));
 		
 		public static final RegistryObject<PotionItem> ETHONAL =ITEMS.register("ethonal",
 				() -> new PotionItem(new PotionItem.Properties().stacksTo(1)));
+		
 		
 		public static void register(IEventBus eventBus) {
 			ITEMS.register(eventBus);
