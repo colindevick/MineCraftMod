@@ -9,6 +9,7 @@ import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraftforge.registries.RegistryObject;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
@@ -17,8 +18,8 @@ public class Speed_BoatEntity extends Boat implements GeoEntity{
 	
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
-	  public Speed_BoatEntity(EntityType<? extends Boat>p_38290_, Level p_38291_) {
-	      super(p_38290_, p_38291_);
+	  public Speed_BoatEntity(EntityType<? extends Boat> speedBoats, Level p_38291_) {
+	      super(speedBoats, p_38291_);
 	      this.blocksBuilding = true;
 	   }
 

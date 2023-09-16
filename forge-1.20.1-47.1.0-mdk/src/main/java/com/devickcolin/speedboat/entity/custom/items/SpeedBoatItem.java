@@ -52,8 +52,7 @@ public class SpeedBoatItem extends BoatItem {
 		         }
 
 		         if (hitresult.getType() == HitResult.Type.BLOCK) {
-		            Speed_BoatEntity boat = this.getBoat(p_40622_, hitresult);
-		            boat.setVariant(null);
+		            Speed_BoatEntity boat = this.getSpeedBoat(p_40622_, hitresult);
 		            boat.setYRot(p_40623_.getYRot());
 		            if (!p_40622_.noCollision(boat, boat.getBoundingBox())) {
 		               return InteractionResultHolder.fail(itemstack);
@@ -75,7 +74,7 @@ public class SpeedBoatItem extends BoatItem {
 		      }
 		   }
 
-	   private Speed_BoatEntity getBoat(Level p_220017_, HitResult p_220018_) {
+	   private Speed_BoatEntity getSpeedBoat(Level p_220017_, HitResult p_220018_) {
 		      return new Speed_BoatEntity(p_220017_, p_220018_.getLocation().x, p_220018_.getLocation().y, p_220018_.getLocation().z);
 		   }
 	
