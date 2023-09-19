@@ -1,5 +1,5 @@
 package com.devickcolin.speedboat.entity.custom;
-
+// TODO Add functionality that points entity in the direction the boat is moving.
 import java.util.List;
 
 import com.devickcolin.speedboat.entity.custom.items.ModItems;
@@ -147,9 +147,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 			this.absMoveTo(this.lerpX, this.lerpY, this.lerpZ, (float) this.lerpYRot, (float) this.lerpXRot);
 		}
 	}
-	protected Vec3 getRelativePortalPosition(Direction.Axis p_38335_, BlockUtil.FoundRectangle p_38336_) {
-	      return LivingEntity.resetForwardDirectionOfRelativePortalPosition(super.getRelativePortalPosition(p_38335_, p_38336_));
-	   }
+	
 	 protected void positionRider(Entity p_289552_, Entity.MoveFunction p_289571_) {
 	      if (this.hasPassenger(p_289552_)) {
 	         float f = this.getSinglePassengerXOffset();
