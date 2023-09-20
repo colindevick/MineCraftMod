@@ -15,11 +15,6 @@ public class SpeedBoatRenderer extends GeoEntityRenderer<Speed_BoatEntity> {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void render(Speed_BoatEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-		this.animatable = entity;
-
-		defaultRender(poseStack, entity, bufferSource, null, null, entityYaw, partialTick, packedLight);
-	}
 
 	
 	 
