@@ -1,4 +1,5 @@
 package com.devickcolin.speedboat.entity.custom;
+
 // TODO Add functionality that points entity in the direction the boat is moving.
 import java.util.List;
 
@@ -7,12 +8,16 @@ import com.devickcolin.speedboat.entity.custom.items.ModItems;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.EntityType;
@@ -24,12 +29,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.WaterlilyBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.EasingType;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftforge.common.extensions.IForgeBoat {
@@ -41,7 +54,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 			.defineId(Speed_BoatEntity.class, EntityDataSerializers.INT);
 	private static final EntityDataAccessor<Float> DATA_ID_DAMAGE = SynchedEntityData.defineId(Speed_BoatEntity.class,
 			EntityDataSerializers.FLOAT);
-	private static final boolean bubbleColumnDirectionIsDown = false;
+	private boolean bubbleColumnDirectionIsDown = false;
 	private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 	private float invFriction;
 	private Speed_BoatEntity.Status oldStatus;
@@ -78,10 +91,10 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		this.yo = p_38295_;
 		this.zo = p_38296_;
 	}
-	
+
 	public float getBubbleAngle(float p_38353_) {
-	      return Mth.lerp(p_38353_, this.bubbleAngleO, this.bubbleAngle);
-	   }
+		return Mth.lerp(p_38353_, this.bubbleAngleO, this.bubbleAngle);
+	}
 
 	public AnimatableInstanceCache getAnimatableInstanceCache() {
 		// TODO Auto-generated method stub
@@ -90,18 +103,19 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 
 	@Override
 	public void registerControllers(ControllerRegistrar arg0) {
-		// TODO Auto-generated method stub
+		GeckoLibUtil.addCustomEasingType(this.stringUUID, EasingType.EASE_IN_CIRC );
 
 	}
-	
-	public void lerpTo(double p_38299_, double p_38300_, double p_38301_, float p_38302_, float p_38303_, int p_38304_, boolean p_38305_) {
-	      this.lerpX = p_38299_;
-	      this.lerpY = p_38300_;
-	      this.lerpZ = p_38301_;
-	      this.lerpYRot = (double)p_38302_;
-	      this.lerpXRot = (double)p_38303_;
-	      this.lerpSteps = 10;
-	   }
+
+	public void lerpTo(double p_38299_, double p_38300_, double p_38301_, float p_38302_, float p_38303_, int p_38304_,
+			boolean p_38305_) {
+		this.lerpX = p_38299_;
+		this.lerpY = p_38300_;
+		this.lerpZ = p_38301_;
+		this.lerpYRot = (double) p_38302_;
+		this.lerpXRot = (double) p_38303_;
+		this.lerpSteps = 10;
+	}
 
 	public double getPassengersRidingOffset() {
 		return -0.1D;
@@ -115,7 +129,6 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		return this.entityData.get(DATA_ID_HURTDIR);
 	}
 
-	@Override
 	public Item getDropItem() {
 		return ModItems.SPEEDBOAT.get();
 	}
@@ -124,7 +137,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		this.entityData.set(DATA_ID_DAMAGE, p_38312_);
 	}
 
-	protected void addAdditionalSaveData(CompoundTag p_38359_) {
+	public void addAdditionalSaveData(CompoundTag p_38359_) {
 
 	}
 
@@ -147,38 +160,45 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 			this.absMoveTo(this.lerpX, this.lerpY, this.lerpZ, (float) this.lerpYRot, (float) this.lerpXRot);
 		}
 	}
-	
-	 protected void positionRider(Entity p_289552_, Entity.MoveFunction p_289571_) {
-	      if (this.hasPassenger(p_289552_)) {
-	         float f = this.getSinglePassengerXOffset();
-	         float f1 = (float)((this.isRemoved() ? (double)0.01F : this.getPassengersRidingOffset()) + p_289552_.getMyRidingOffset());
-	         if (this.getPassengers().size() > 1) {
-	            int i = this.getPassengers().indexOf(p_289552_);
-	            if (i == 0) {
-	               f = 0.2F;
-	            } else {
-	               f = -0.6F;
-	            }
 
-	            if (p_289552_ instanceof Animal) {
-	               f += 0.2F;
-	            }
-	         }
+	protected void positionRider(Entity p_289552_, Entity.MoveFunction p_289571_) {
+		if (this.hasPassenger(p_289552_)) {
+			float f = this.getSinglePassengerXOffset();
+			float f1 = (float) ((this.isRemoved() ? (double) 0.01F : this.getPassengersRidingOffset())
+					+ p_289552_.getMyRidingOffset());
+			if (this.getPassengers().size() > 1) {
+				int i = this.getPassengers().indexOf(p_289552_);
+				if (i == 0) {
+					f = 0.2F;
+				} else {
+					f = -0.6F;
+				}
 
-	         Vec3 vec3 = (new Vec3((double)f, 0.0D, 0.0D)).yRot(-this.getYRot() * ((float)Math.PI / 180F) - ((float)Math.PI / 2F));
-	         p_289571_.accept(p_289552_, this.getX() + vec3.x, this.getY() + (double)f1, this.getZ() + vec3.z);
-	         p_289552_.setYRot(p_289552_.getYRot() + this.deltaRotation);
-	         p_289552_.setYHeadRot(p_289552_.getYHeadRot() + this.deltaRotation);
-	         this.clampRotation(p_289552_);
-	         if (p_289552_ instanceof Animal && this.getPassengers().size() == this.getMaxPassengers()) {
-	            int j = p_289552_.getId() % 2 == 0 ? 90 : 270;
-	            p_289552_.setYBodyRot(((Animal)p_289552_).yBodyRot + (float)j);
-	            p_289552_.setYHeadRot(p_289552_.getYHeadRot() + (float)j);
-	         }
+				if (p_289552_ instanceof Animal) {
+					f += 0.2F;
+				}
+			}
 
-	      }
+			Vec3 vec3 = (new Vec3((double) f, 0.0D, 0.0D))
+					.yRot(-this.getYRot() * ((float) Math.PI / 180F) - ((float) Math.PI / 2F));
+			p_289571_.accept(p_289552_, this.getX() + vec3.x, this.getY() + (double) f1, this.getZ() + vec3.z);
+			p_289552_.setYRot(p_289552_.getYRot() + this.deltaRotation);
+			p_289552_.setYHeadRot(p_289552_.getYHeadRot() + this.deltaRotation);
+			this.clampRotation(p_289552_);
+			if (p_289552_ instanceof Animal && this.getPassengers().size() == this.getMaxPassengers()) {
+				int j = p_289552_.getId() % 2 == 0 ? 90 : 270;
+				p_289552_.setYBodyRot(((Animal) p_289552_).yBodyRot + (float) j);
+				p_289552_.setYHeadRot(p_289552_.getYHeadRot() + (float) j);
+			}
+
+		}
+	}
+	protected int getMaxPassengers() {
+	      return 1;
 	   }
-
+	protected float getSinglePassengerXOffset() {
+	      return 0.0F;
+	   }
 	protected boolean canAddPassenger(Entity p_38390_) {
 		return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
 	}
@@ -222,29 +242,31 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		}
 
 		this.tickBubbleColumn();
+		
+			this.checkInsideBlocks();
+			List<Entity> list = this.level().getEntities(this,
+					this.getBoundingBox().inflate((double) 0.2F, (double) -0.01F, (double) 0.2F),
+					EntitySelector.pushableBy(this));
+			if (!list.isEmpty()) {
+				boolean flag = !this.level().isClientSide && !(this.getControllingPassenger() instanceof Player);
 
-		this.checkInsideBlocks();
-		List<Entity> list = this.level().getEntities(this,
-				this.getBoundingBox().inflate((double) 0.2F, (double) -0.01F, (double) 0.2F),
-				EntitySelector.pushableBy(this));
-		if (!list.isEmpty()) {
-			boolean flag = !this.level().isClientSide && !(this.getControllingPassenger() instanceof Player);
-
-			for (int j = 0; j < list.size(); ++j) {
-				Entity entity = list.get(j);
-				if (!entity.hasPassenger(this)) {
-					if (flag && this.getPassengers().size() < this.getMaxPassengers() && !entity.isPassenger()
-							&& this.hasEnoughSpaceFor(entity) && entity instanceof LivingEntity
-							&& !(entity instanceof WaterAnimal) && !(entity instanceof Player)) {
-						entity.startRiding(this);
-					} else {
-						this.push(entity);
+				for (int j = 0; j < list.size(); ++j) {
+					Entity entity = list.get(j);
+					if (!entity.hasPassenger(this)) {
+						if (flag && this.getPassengers().size() < this.getMaxPassengers() && !entity.isPassenger()
+								&& this.hasEnoughSpaceFor(entity) && entity instanceof LivingEntity
+								&& !(entity instanceof WaterAnimal) && !(entity instanceof Player)) {
+							entity.startRiding(this);
+						} else {
+							this.push(entity);
+						}
 					}
 				}
 			}
 		}
-
-	}
+	public boolean hasEnoughSpaceFor(Entity p_273171_) {
+	      return p_273171_.getBbWidth() < this.getBbWidth();
+	   }
 
 	@Override
 	protected void defineSynchedData() {
@@ -258,23 +280,23 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		this.spawnAtLocation(this.getDropItem());
 	}
 
-	
 	public boolean isControlledByLocalInstance() {
 		return true;
 	}
-	
-	protected void clampRotation(Entity p_38322_) {
-	      p_38322_.setYBodyRot(this.getYRot());
-	      float f = Mth.wrapDegrees(p_38322_.getYRot() - this.getYRot());
-	      float f1 = Mth.clamp(f, -105.0F, 105.0F);
-	      p_38322_.yRotO += f1 - f;
-	      p_38322_.setYRot(p_38322_.getYRot() + f1 - f);
-	      p_38322_.setYHeadRot(p_38322_.getYRot());
-	   }
 
-	   public void onPassengerTurned(Entity p_38383_) {
-	      this.clampRotation(p_38383_);
-	   }
+	protected void clampRotation(Entity p_38322_) {
+		p_38322_.setYBodyRot(this.getYRot());
+		float f = Mth.wrapDegrees(p_38322_.getYRot() - this.getYRot());
+		float f1 = Mth.clamp(f, -105.0F, 105.0F);
+		p_38322_.yRotO += f1 - f;
+		p_38322_.setYRot(p_38322_.getYRot() + f1 - f);
+		p_38322_.setYHeadRot(p_38322_.getYRot());
+	}
+
+	public void onPassengerTurned(Entity p_38383_) {
+		this.clampRotation(p_38383_);
+	}
+
 	private void floatBoat() {
 		double d0 = (double) -0.04F;
 		double d1 = this.isNoGravity() ? 0.0D : (double) -0.04F;
@@ -283,7 +305,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		if (this.oldStatus == Speed_BoatEntity.Status.IN_AIR && this.status != Speed_BoatEntity.Status.IN_AIR
 				&& this.status != Speed_BoatEntity.Status.ON_LAND) {
 			this.waterLevel = this.getY(1.0D);
-			this.setPos(this.getX(), (double) (this.getWaterLevelAbove() - this.getBbHeight() - 1.0D), this.getZ());
+			this.setPos(this.getX(), (double) (this.getWaterLevelAbove() - this.getBbHeight() + 1.5D), this.getZ());
 			this.setDeltaMovement(this.getDeltaMovement().multiply(1.0D, 0.0D, 1.0D));
 			this.lastYd = 0.0D;
 			this.status = Speed_BoatEntity.Status.IN_WATER;
@@ -316,13 +338,13 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		}
 
 	}
-	
+
 	public void setInput(boolean p_38343_, boolean p_38344_, boolean p_38345_, boolean p_38346_) {
-	      this.inputLeft = p_38343_;
-	      this.inputRight = p_38344_;
-	      this.inputUp = p_38345_;
-	      this.inputDown = p_38346_;
-	   }
+		this.inputLeft = p_38343_;
+		this.inputRight = p_38344_;
+		this.inputUp = p_38345_;
+		this.inputDown = p_38346_;
+	}
 
 	public LivingEntity getControllingPassenger() {
 		Entity entity = this.getFirstPassenger();
@@ -394,11 +416,11 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		if (this.isVehicle()) {
 			float f = 0.0F;
 			if (this.inputLeft) {
-				--this.deltaRotation;
+				this.deltaRotation -= .5;
 			}
 
 			if (this.inputRight) {
-				++this.deltaRotation;
+				this.deltaRotation += .5;
 			}
 
 			if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
@@ -480,7 +502,40 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 
 		return flag;
 	}
+	 public float getGroundFriction() {
+	      AABB aabb = this.getBoundingBox();
+	      AABB aabb1 = new AABB(aabb.minX, aabb.minY - 0.001D, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ);
+	      int i = Mth.floor(aabb1.minX) - 1;
+	      int j = Mth.ceil(aabb1.maxX) + 1;
+	      int k = Mth.floor(aabb1.minY) - 1;
+	      int l = Mth.ceil(aabb1.maxY) + 1;
+	      int i1 = Mth.floor(aabb1.minZ) - 1;
+	      int j1 = Mth.ceil(aabb1.maxZ) + 1;
+	      VoxelShape voxelshape = Shapes.create(aabb1);
+	      float f = 0.0F;
+	      int k1 = 0;
+	      BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
+	      for(int l1 = i; l1 < j; ++l1) {
+	         for(int i2 = i1; i2 < j1; ++i2) {
+	            int j2 = (l1 != i && l1 != j - 1 ? 0 : 1) + (i2 != i1 && i2 != j1 - 1 ? 0 : 1);
+	            if (j2 != 2) {
+	               for(int k2 = k; k2 < l; ++k2) {
+	                  if (j2 <= 0 || k2 != k && k2 != l - 1) {
+	                     blockpos$mutableblockpos.set(l1, k2, i2);
+	                     BlockState blockstate = this.level().getBlockState(blockpos$mutableblockpos);
+	                     if (!(blockstate.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(blockstate.getCollisionShape(this.level(), blockpos$mutableblockpos).move((double)l1, (double)k2, (double)i2), voxelshape, BooleanOp.AND)) {
+	                        f += blockstate.getFriction(this.level(), blockpos$mutableblockpos, this);
+	                        ++k1;
+	                     }
+	                  }
+	               }
+	            }
+	         }
+	      }
+
+	      return f / (float)k1;
+	   }
 	private Speed_BoatEntity.Status getStatus() {
 		Speed_BoatEntity.Status boat$status = this.isUnderwater();
 		if (boat$status != null) {
@@ -525,7 +580,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 				if (j > 0 && k == 0) {
 					this.setBubbleTime(0);
 					Vec3 vec3 = this.getDeltaMovement();
-					if (Speed_BoatEntity.bubbleColumnDirectionIsDown) {
+					if (this.bubbleColumnDirectionIsDown) {
 						this.setDeltaMovement(vec3.add(0.0D, -0.7D, 0.0D));
 						this.ejectPassengers();
 					} else {
@@ -540,6 +595,23 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		}
 
 	}
+	
+	public void onAboveBubbleCol(boolean p_38381_) {
+	      if (!this.level().isClientSide) {
+	         this.isAboveBubbleColumn = true;
+	         this.bubbleColumnDirectionIsDown = p_38381_;
+	         if (this.getBubbleTime() == 0) {
+	            this.setBubbleTime(60);
+	         }
+	      }
+
+	      this.level().addParticle(ParticleTypes.SPLASH, this.getX() + (double)this.random.nextFloat(), this.getY() + 0.7D, this.getZ() + (double)this.random.nextFloat(), 0.0D, 0.0D, 0.0D);
+	      if (this.random.nextInt(20) == 0) {
+	         this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), this.getSwimSplashSound(), this.getSoundSource(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
+	         this.gameEvent(GameEvent.SPLASH, this.getControllingPassenger());
+	      }
+
+	   }
 
 	private int getBubbleTime() {
 		return this.entityData.get(DATA_ID_BUBBLE_TIME);
@@ -548,13 +620,13 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 	private void setBubbleTime(int p_38367_) {
 		this.entityData.set(DATA_ID_BUBBLE_TIME, p_38367_);
 	}
-	
+
 	public static enum Status {
-	      IN_WATER,
-	      UNDER_WATER,
-	      UNDER_FLOWING_WATER,
-	      ON_LAND,
-	      IN_AIR;
-	   }
+		IN_WATER, UNDER_WATER, UNDER_FLOWING_WATER, ON_LAND, IN_AIR;
+	}
+
+	
+
+	
 
 }
