@@ -17,7 +17,7 @@ public class ModEntityCreator {
 	
 	public static final RegistryObject<EntityType<Speed_BoatEntity>> SPEED_BOATS = 
 			ENTITY_TYPES.register("speedboat", () -> EntityType.Builder.<Speed_BoatEntity>of(Speed_BoatEntity::new , MobCategory.MISC)
-					.sized(1.5f, .5f)
+					.sized(1.5f, .4f)
 					.build(new ResourceLocation(ModHandler.MOD_ID,"speedboat").toString()));
 	public static void register(IEventBus eventBus) {
 		ENTITY_TYPES.register(eventBus);

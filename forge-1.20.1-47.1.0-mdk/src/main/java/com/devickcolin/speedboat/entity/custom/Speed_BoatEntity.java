@@ -7,6 +7,7 @@ import com.devickcolin.speedboat.entity.custom.items.ModItems;
 
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
+import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,7 +40,11 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.constant.DataTickets;
+import com.devickcolin.speedboat.entity.client.SpeedBoatModel;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
 import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.EasingType;
@@ -78,7 +83,8 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 	private double lerpZ;
 	private double lerpY;
 	private double lerpX;
-
+	private int tick = 0;
+	
 	public Speed_BoatEntity(EntityType<? extends Speed_BoatEntity> speedBoats, Level p_38291_) {
 		super(speedBoats, p_38291_);
 		this.blocksBuilding = true;
@@ -103,8 +109,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 
 	@Override
 	public void registerControllers(ControllerRegistrar arg0) {
-		GeckoLibUtil.addCustomEasingType(this.stringUUID, EasingType.EASE_IN_CIRC );
-
+		GeckoLibUtil.addCustomEasingType(this.stringUUID, EasingType.EASE_OUT_EXPO);
 	}
 
 	public void lerpTo(double p_38299_, double p_38300_, double p_38301_, float p_38302_, float p_38303_, int p_38304_,
@@ -205,6 +210,11 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 
 	@SuppressWarnings("resource")
 	public void tick() {
+		tick++;
+		if (tick == 10) {
+			tick = 0;
+			
+		}
 		this.oldStatus = this.status;
 		this.status = this.getStatus();
 		if (this.status != Speed_BoatEntity.Status.UNDER_WATER
@@ -416,11 +426,11 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 		if (this.isVehicle()) {
 			float f = 0.0F;
 			if (this.inputLeft) {
-				this.deltaRotation -= .5;
+				this.deltaRotation--;
 			}
 
 			if (this.inputRight) {
-				this.deltaRotation += .5;
+				this.deltaRotation++;
 			}
 
 			if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
