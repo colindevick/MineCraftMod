@@ -39,10 +39,12 @@ public class SpeedBoatModel extends GeoModel<Speed_BoatEntity> {
 			AnimationState<Speed_BoatEntity> animationState) {
 		super.setCustomAnimations(animatable, instanceId, animationState);
 		CoreGeoBone hull = getAnimationProcessor().getBone("Hull");
+		CoreGeoBone culling = getAnimationProcessor().getBone("Culling");
 		Entity entityData = animationState.getData(DataTickets.ENTITY);
 		
 		if (hull != null) {
 			hull.updateRotation(0 ,-Mth.DEG_TO_RAD*entityData.getYRot(), 0);
+			culling.updateRotation(0 ,hull.getRotY(), 0);
 		}
 		
 
