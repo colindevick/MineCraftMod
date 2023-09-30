@@ -46,7 +46,7 @@
 				{
 					"name": "Engine",
 					"parent": "Hull",
-					"pivot": [0, 0, 0],
+					"pivot": [0, 7, 10],
 					"cubes": [
 						{"origin": [-3, 4, 10], "size": [6, 4, 4], "uv": [0, 15]},
 						{"origin": [-1, -2, 11], "size": [2, 6, 1], "uv": [0, 23]},
