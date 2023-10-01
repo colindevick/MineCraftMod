@@ -6,6 +6,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 
 public enum CreativeTab {
 	TOOLS_AND_UTILITIES(CreativeModeTabs.TOOLS_AND_UTILITIES),
+	FOOD_AND_DRINKS(CreativeModeTabs.FOOD_AND_DRINKS),
 	DEFAULT();
 
 	private ResourceKey<CreativeModeTab> tab;
