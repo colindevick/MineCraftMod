@@ -2,6 +2,7 @@ package com.devickcolin.speedboat.entity.custom;
 
 import java.util.List;
 
+import com.devickcolin.speedboat.entity.custom.items.EthonalItem;
 import com.devickcolin.speedboat.entity.custom.items.ModItems;
 
 import net.minecraft.core.BlockPos;
@@ -73,6 +74,8 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 	private double lerpY;
 	private double lerpX;
 	private int tick = 0;
+	private float fuelLevel;
+	private static final int MAX_FUEL = 100;
 
 	public Speed_BoatEntity(EntityType<? extends Speed_BoatEntity> speedBoats, Level p_38291_) {
 		super(speedBoats, p_38291_);
@@ -437,6 +440,7 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 				if (f != 0) {
 					f -= .03;
 				}
+				
 			}
 
 			if (this.inputRight != this.inputLeft && !this.inputUp && !this.inputDown) {
@@ -637,6 +641,13 @@ public class Speed_BoatEntity extends Boat implements GeoEntity, net.minecraftfo
 			this.gameEvent(GameEvent.SPLASH, this.getControllingPassenger());
 		}
 
+	}
+	
+	//Input the ethonal amount and return the remainder to the container if the is full
+	public float addFuel (float fuelContained ) {
+		float oldFuel = fuelLevel;
+		fuelLevel =  fuelLevel + fuelContained <= MAX_FUEL ? fuelLevel + fuelContained : MAX_FUEL - fuelLevel;
+		return fuelContained - (MAX_FUEL - oldFuel) >= 0 ? fuelContained - (MAX_FUEL - oldFuel) : 0;
 	}
 
 	private int getBubbleTime() {
