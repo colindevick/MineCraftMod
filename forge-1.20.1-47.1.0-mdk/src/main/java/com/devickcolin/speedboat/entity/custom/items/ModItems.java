@@ -18,7 +18,7 @@ public class ModItems {
 				() -> new SpeedBoatItem (false, null, new SpeedBoatItem.Properties().stacksTo(1)));
 		
 		public static final RegistryObject<PotionItem> ETHONAL =ITEMS.register("ethonal",
-				() -> new PotionItem(new PotionItem.Properties().stacksTo(1)));
+				() -> new PotionItem(new PotionItem.Properties().stacksTo(1).durability(25)));
 		
 		
 		public static void register(IEventBus eventBus) {
