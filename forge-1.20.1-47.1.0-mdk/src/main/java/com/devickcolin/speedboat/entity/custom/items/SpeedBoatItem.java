@@ -30,8 +30,6 @@ public class SpeedBoatItem extends BoatItem implements IForgeBoat {
 	public SpeedBoatItem(boolean p_220013_, Type p_220014_, Properties p_220015_) {
 		super(p_220013_, null, p_220015_);
 	}
-
-	//@ TODO add "speed boat" type to boat so it will spawn
 	   public InteractionResultHolder<ItemStack> use(Level p_40622_, Player p_40623_, InteractionHand p_40624_) {
 		      ItemStack itemstack = p_40623_.getItemInHand(p_40624_);
 		      HitResult hitresult = getPlayerPOVHitResult(p_40622_, p_40623_, ClipContext.Fluid.ANY);
