@@ -3,7 +3,7 @@ package com.devickcolin.speedboat.entity.custom.items;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.devickcolin.speedboat.entity.custom.Speed_BoatEntity;
+import com.devickcolin.speedboat.entity.client.Speed_BoatEntity;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -52,10 +52,8 @@ public class EthonalItem extends PotionItem {
 				}
 			}
 
-		} else {
-			super.use(level, player, playerHand);
 		}
-
+		super.use(level, player, playerHand);
 		return InteractionResultHolder.pass(itemstack);
 	}
 	// @ TODO Add function that fills the speedboat.
