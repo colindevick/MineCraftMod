@@ -1,7 +1,6 @@
 package com.devickcolin.speedboat.entity.client;
 
-import com.devickcolin.speedboat.entity.custom.ModHandler;
-import com.devickcolin.speedboat.entity.custom.Speed_BoatEntity;
+import com.devickcolin.speedboat.entity.custom.core.ModHandler;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
