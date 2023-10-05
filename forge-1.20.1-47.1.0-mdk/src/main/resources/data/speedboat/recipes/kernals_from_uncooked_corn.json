@@ -1,0 +1,18 @@
+ {
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [ 
+ 
+  	{
+ 
+  	"item": "speedboat:uncooked_corn"
+  	}
+  ],
+  
+  "result": {
+
+    "item": "speedboat:kernals_corn",
+    "count": 9
+  	 }
+  }
+  
