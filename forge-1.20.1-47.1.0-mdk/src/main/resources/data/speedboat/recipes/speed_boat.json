@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:blast_furnace"
+    },
+    "G": {
+      "tag": "forge:glass_panes/colorless"
+    },
+    "I": { 
+    	"tag": "forge:ingots/iron"
+    }
+  },
+  "pattern": [
+  	"B G",
+    "I I",
+    "III"
+  ],
+  "result": {
+    "item": "speedboat:speedboat"
+  }
+  }
+  
