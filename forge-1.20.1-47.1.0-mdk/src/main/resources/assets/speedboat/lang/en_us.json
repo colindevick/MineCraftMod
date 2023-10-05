@@ -1,5 +1,8 @@
 {
-	"item.speedboat.speedboat": "SpeedBoat"
+	"item.speedboat.speedboat": "SpeedBoat",
+	"item.speedboat.cooked_corn": "Cooked Corn",
+	"item.speedboat.kernals_corn": "Corn Kernals",
+	"item.speedboat.uncooked_corn": "Corn Cob"
 	
 
 }
