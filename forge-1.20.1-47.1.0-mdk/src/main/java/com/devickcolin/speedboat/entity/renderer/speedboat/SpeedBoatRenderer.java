@@ -1,7 +1,7 @@
 package com.devickcolin.speedboat.entity.renderer.speedboat;
 
-import com.devickcolin.speedboat.entity.client.SpeedBoatModel;
-import com.devickcolin.speedboat.entity.client.Speed_BoatEntity;
+import com.devickcolin.speedboat.client.SpeedBoatModel;
+import com.devickcolin.speedboat.client.Speed_BoatEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
